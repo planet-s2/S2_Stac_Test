@@ -2,3 +2,4 @@ fastapi
 uvicorn
 pystac-client
 pydantic
+requests
