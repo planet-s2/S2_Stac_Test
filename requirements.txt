@@ -3,3 +3,4 @@ uvicorn
 pystac-client
 pydantic
 requests
+sse-starlette

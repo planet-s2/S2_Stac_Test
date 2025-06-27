@@ -2,6 +2,9 @@ from fastapi import FastAPI
 import requests  
 from pydantic import BaseModel, Field
 from typing import Optional, List
+import asyncio
+from sse_starlette.sse import EventSourceResponse
+from starlette.requests import Request
 
 # The main application instance that Vercel will run  
 app = FastAPI()
@@ -50,6 +53,24 @@ def search_stac_items(request: STACRequest) -> dict:
     except Exception as e:
         # Handle other potential errors, e.g., JSON decoding
         return {"error": f"An unexpected error occurred. Reason: {str(e)}"}
+
+# SSE endpoint for MCP compatibility
+@app.get("/events")
+async def stream_events(request: Request):
+    """
+    SSE endpoint for MCP compatibility. Keeps the connection alive.
+    """
+    async def event_generator():
+        while True:
+            # If client closes connection, stop sending events
+            if await request.is_disconnected():
+                break
+            # Send a ping event every 15 seconds to keep connection alive
+            yield {"event": "ping", "data": ""}
+            await asyncio.sleep(15)
+
+    return EventSourceResponse(event_generator())
+
 
 # A root endpoint for health checks to easily see if the server is running  
 @app.get("/")  
