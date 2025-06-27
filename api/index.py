@@ -7,7 +7,7 @@ app = FastAPI()
 
 # Pydantic models for type checking the incoming request  
 class STACRequest(BaseModel):  
-    stac_url: str = Field(..., example="https://www.geo.admin.ch/en/rest-interface-stac-api")  
+    stac_url: str = Field("https://www.geo.admin.ch/en/rest-interface-stac-api")  
     query: dict | None = None  
     bbox: list[float] | None = None  
     datetime_str: str | None = None  
